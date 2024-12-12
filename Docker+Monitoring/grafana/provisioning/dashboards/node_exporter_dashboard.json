@@ -1,0 +1,26 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "node_exporter_dashboard",
+    "title": "Node Exporter",
+    "tags": ["node", "exporter"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "refresh": "5s",
+    "panels": [
+      {
+        "type": "graph",
+        "title": "CPU Usage",
+        "targets": [
+          {
+            "expr": "avg(rate(node_cpu_seconds_total{mode='user'}[1m])) by (instance)",
+            "legendFormat": "{{instance}}",
+            "refId": "A"
+          }
+        ]
+      }
+    ]
+  }
+}
+
