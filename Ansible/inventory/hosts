@@ -1,0 +1,7 @@
+[all]
+server1 ansible_host=192.168.1.1
+server2 ansible_host=192.168.1.2
+
+[docker]
+localhost ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=password ansible_port=2222
+

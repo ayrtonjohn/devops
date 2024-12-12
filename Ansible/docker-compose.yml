@@ -1,0 +1,24 @@
+version: '3.9'
+
+services:
+  ansible_target:
+    image: ubuntu:latest
+    container_name: ansible_target
+    ports:
+      - "2222:22" # Map container's SSH port to host's port 2222
+    volumes:
+      - ./setup:/setup # Optional: Mount a setup folder for scripts or data
+    stdin_open: true
+    tty: true
+    privileged: true
+    command: >
+      bash -c "
+      apt update &&
+      apt install -y openssh-server sudo &&
+      echo 'root:password' | chpasswd &&
+      mkdir -p /var/run/sshd &&
+      sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config &&
+      service ssh start &&
+      tail -f /dev/null
+      "
+
