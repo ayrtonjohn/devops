@@ -27,3 +27,16 @@ output "rds_endpoint" {
 output "cloudfront_domain_name" {
   value = aws_cloudfront_distribution.ayrton_cf.domain_name
 }
+
+
+output "monitoring_instance_public_ip" {
+  value = aws_instance.monitoring_instance.public_ip
+}
+
+output "grafana_url" {
+  value = "http://${aws_instance.monitoring_instance.public_ip}:3000"
+}
+
+output "prometheus_url" {
+  value = "http://${aws_instance.monitoring_instance.public_ip}:9090"
+}

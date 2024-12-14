@@ -83,3 +83,10 @@ variable "cf_name" {
 variable "cf_restricted_locations" {
   default = ["JP", "HK"]
 }
+
+
+variable "monitoring_instance_name" {
+  default = "monitoring-instance"
+}
+
+variable "secret_key" {}

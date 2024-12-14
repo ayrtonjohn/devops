@@ -178,3 +178,45 @@ resource "aws_cloudfront_distribution" "ayrton_cf" {
     Name = var.cf_name
   }
 }
+
+resource "aws_instance" "monitoring_instance" {
+  ami           = var.ami_id
+  instance_type = var.instance_type
+  subnet_id     = aws_subnet.ayrton_subnet.id
+  security_groups = [
+    aws_security_group.ayrton_sg.name
+  ]
+  tags = {
+    Name = "monitoring-instance"
+  }
+
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo yum update -y
+              sudo yum install docker -y
+              sudo service docker start
+              sudo usermod -aG docker ec2-user
+              sudo curl -L "https://github.com/docker/compose/releases/download/v2.22.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+              EOF
+}
+
+resource "null_resource" "docker_setup" {
+  depends_on = [aws_instance.monitoring_instance]
+
+  provisioner "remote-exec" {
+    inline = [
+      "mkdir -p /home/ec2-user/docker-compose",
+      "echo '${file("./monitoring/docker-compose.yml")}' > /home/ec2-user/docker-compose/docker-compose.yml",
+      "cd /home/ec2-user/docker-compose",
+      "docker-compose up -d"
+    ]
+
+    connection {
+      type        = "ssh"
+      host        = aws_instance.monitoring_instance.public_ip
+      user        = "ec2-user"
+      private_key = file("~/.ssh/id_rsa") # Path to your SSH key
+    }
+  }
+}
